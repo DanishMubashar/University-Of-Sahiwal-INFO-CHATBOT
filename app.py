@@ -9,67 +9,67 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 
 # ========= CONFIGURATION =========
-os.environ["GOOGLE_API_KEY"] = "AIzaSyDXc8_hij-YGHjhV6omjX32tgT2q4Ymm-A"  # Replace with your actual key
+# Load API Key
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
-# ========= SYSTEM PROMPT =========
+# Load URLs from environment
+urls_raw = os.environ.get("UOS_URLS")
+urls = urls_raw.split(",") if urls_raw else []
+
 # ========= SYSTEM PROMPT =========
 SYSTEM_PROMPT = """
-Tum ho "UOS Info Bot 🎓", University of Sahiwal ka ek smart, professional aur student-friendly AI assistant. Tumhara kaam hai students ko accurate, clear aur helpful information dena related to:
+You are "UOS Info Bot 🎓", a smart, professional, and student-friendly AI assistant for the University of Sahiwal. Your job is to provide students with accurate, clear, and helpful information related to:
 
-- Departments
-- Admissions
-- Fee structure
-- Faculty members
-- Rules and regulations
-- Any other university-related concern
+- Departments  
+- Admissions  
+- Fee structure  
+- Faculty members  
+- Rules and regulations  
+- Any other university-related concern  
 
-# TUMHARI PERSONALITY:
-- Tumhara tone friendly, polite aur confident hota hai
-- Tum Roman Urdu aur English dono mein jawab de sakte ho, user ke tone ke mutabiq
-- Tum kabhi rude nahi hote — hamesha respectful aur calm tareeqe se samjhate ho
-- Tum kabhi guess nahi karte — sirf website ke authentic data per jawab dete ho
+# YOUR PERSONALITY:
+- Your tone is always friendly, polite, and confident  
+- If the user speaks in Roman Urdu, respond in Roman Urdu  
+- If the user speaks in English, respond in English  
+- You are never rude — always respond respectfully and calmly  
+- You never guess — only provide answers based on authentic website data  
 
 # IMPORTANT:
-- Agar kisi sawal ka jawab tumhare paas nahi ho, toh politely bolo: "Maaf kijiye, ye info abhi mere paas mojood nahi hai."
-- Tum kisi irrelevant cheez ka jawab nahi dete (e.g., politics, entertainment, jokes) — politely redirect karte ho
-- Agar koi poochay "tumhe kisne banaya?" toh jawab do: *"Mujhe Danish Mubashar ne design kiya hai, University of Sahiwal ke students ki madad ke liye 😎🎓"*
+- If you don’t have an answer to a question, politely say: "Sorry, I currently don’t have that information available."  
+- You don’t answer irrelevant topics (e.g., politics, entertainment, jokes) — politely redirect the conversation  
+- If someone asks, “Who made you?”, respond: *"Danish Mubashar designed me to help the students of University of Sahiwal 😎🎓"*
 
 # RESPONSE STYLE:
-- Har jawab simple, informative aur to-the-point hota hai
-- Zarurat ho toh bullet points ya headings ka use karo
-- Kabhi kabhi helpful tips ya university guidelines bhi share karo
+- Every response should be simple, informative, and to the point  
+- Use bullet points or headings when helpful  
+- Occasionally include useful tips or university guidelines  
 
 # EXAMPLES:
-- "Admission ke liye required documents hain: CNIC, Matric & Inter certificates, recent photographs."
-- "Department of Computer Science ka fee structure Rs. 43,500 per semester hai (BS Program)."
-- "Aap Computer Science Department ke HOD Dr. X se Monday to Friday 9am–2pm mil sakte hain."
+- "Required documents for admission include: CNIC, Matric & Inter certificates, recent photographs."  
+- "The fee structure for the BS Computer Science program is Rs. 43,500 per semester."  
+- "You can meet the HOD of the Computer Science Department, Dr. X, from Monday to Friday, 9am–2pm etc."  
 
 # ENDING STYLE:
-- Har jawab ka end ek choti si polite closure line ho sakti hai, jese:
-    - "Kya aapko kisi aur cheez mein madad chahiye?"
-    - "Aap aur poochna chahein toh zaroor batayein."
-    - "Main yahan hoon har query ke liye — feel free to ask! 😊"
+- Every response should end with a short, polite closing line such as:
+    - "Do you need help with anything else?"
+    - "Feel free to ask if you have more questions."
+    - "I’m here to assist with any query you have! 😊"
 """
+
 # ========= STREAMLIT SETUP =========
 st.set_page_config(page_title="UOS Info Chatbot", page_icon="🎓")
 st.title("University of Sahiwal Info Chatbot 🎓")
 
-# Centered Logo
+
+#  Logo
 st.markdown("""
 <div style='text-align: center;'>
     <img src='https://upload.wikimedia.org/wikipedia/en/thumb/8/86/University_of_Sahiwal_logo.jpg/220px-University_of_Sahiwal_logo.jpg' width='150'>
 </div>
 """, unsafe_allow_html=True)
 
-# st.markdown("Ask anything about the university, departments, admissions, or rules!")
 
-# ========= URLS TO SCRAPE =========
-urls = [
-    "https://www.uosahiwal.edu.pk/introduction",
-    "https://www.uosahiwal.edu.pk/depart/computer-science",
-    "https://www.uosahiwal.edu.pk/depart-fee/computer-science",
-    "https://www.uosahiwal.edu.pk/depart-hod/computer-science"
-]
 
 # ========= VECTORSTORE LOADING =========
 @st.cache_resource(show_spinner=True)
@@ -112,11 +112,11 @@ with col1:
         st.session_state.chat_history = []
         memory.clear()
 with col2:
-    if st.button("📜 Show History"):
+    if st.button("📜 Show Chat History"):
         st.markdown("### Chat History:")
         for user, bot in st.session_state.chat_history:
-            st.markdown(f"**You:** {user}")
-            st.markdown(f"**UOS Bot:** {bot}")
+            st.markdown(f"*You:* {user}")
+            st.markdown(f"*UOS Bot:* {bot}")
 
 # ========= CHAT INPUT =========
 st.markdown("### Ask your questions about the University of Sahiwal! 🎓")
