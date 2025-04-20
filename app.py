@@ -15,7 +15,7 @@ os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
 # Load URLs from environment
 urls_raw = os.environ.get("UOS_URLS")
-urls = urls_raw.split(",") if urls_raw else []
+urls = urls_raw.split(",") 
 
 # ========= SYSTEM PROMPT =========
 SYSTEM_PROMPT = """
