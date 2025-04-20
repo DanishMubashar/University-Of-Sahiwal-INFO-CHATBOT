@@ -7,15 +7,19 @@ from langchain.vectorstores.faiss import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ========= CONFIGURATION =========
-# Load API Key
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
-# Load URLs from environment
-urls_raw = os.environ.get("UOS_URLS")
-urls = urls_raw.split(",") 
+# UOS URLs setup
+UOS_URLS = os.environ.get("UOS_URLS") 
+
+# Convert string-formatted list to actual Python list
+urls = ast.literal_eval(UOS_URLS) if UOS_URLS else []
 
 # ========= SYSTEM PROMPT =========
 SYSTEM_PROMPT = """
